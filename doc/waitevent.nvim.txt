@@ -1,0 +1,28 @@
+*waitevent.nvim.txt*
+
+==============================================================================
+Lua module: waitevent                               *waitevent.nvim-waitevent*
+
+editor({opts})                                            *waitevent.editor()*
+  Returns executable string to use EDITOR environment variable.
+
+  Parameters: ~
+    {opts} (table|nil) TODO
+
+  Return: ~
+    (string) to use EDITOR
+
+==============================================================================
+EXAMPLES                                             *waitevent.nvim-EXAMPLES*
+
+>
+  vim.env.GIT_EDITOR = require("waitevent").editor({
+    open = function(path)
+      vim.cmd.split(path)
+      vim.bo.bufhidden = "wipe"
+    end,
+  })
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
