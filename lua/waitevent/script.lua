@@ -1,16 +1,11 @@
-local open_editor = function(address, args)
-  local nvim_path = args[1]
-  local nvim_address = args[2]
-  local editor_id = args[3]
-  local file_path = args[4]
-
+local open_editor = function(server_address, nvim_path, nvim_address, editor_id, file_path)
   local cmd_args = {
     "--server",
     nvim_address,
     "--remote-expr",
     ([=[luaeval("require([[waitevent.command]]).open(_A[1], _A[2], _A[3])", [%q, %q, %d])]=]):format(
       file_path,
-      address,
+      server_address,
       editor_id
     ),
   }
@@ -41,7 +36,12 @@ local open_editor = function(address, args)
   end)
 end
 
-local wait_message_once = function(server)
+local wait_message_once = function(server, event_count)
+  if event_count == 0 then
+    server:close()
+    return true
+  end
+
   local ok = false
 
   server:listen(1, function(err)
@@ -64,14 +64,20 @@ local wait_message_once = function(server)
 end
 
 local main = function(args)
+  local nvim_path = args[1]
+  local nvim_address = args[2]
+  local event_count = tonumber(args[3])
+  local editor_id = args[4]
+  local file_path = args[5]
+
   local server = vim.loop.new_tcp()
   server:bind("127.0.0.1", 0)
   local socket_name = server:getsockname()
-  local address = ("%s:%s"):format(socket_name.ip, socket_name.port)
+  local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(address, args)
+  open_editor(server_address, nvim_path, nvim_address, editor_id, file_path)
 
-  local ok = wait_message_once(server)
+  local ok = wait_message_once(server, event_count)
   if not ok then
     os.exit(1)
   end

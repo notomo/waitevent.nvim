@@ -4,20 +4,26 @@ local M = {}
 
 function M.editor(raw_opts)
   local editor_id = require("waitevent.option").store(raw_opts)
+  local opts = require("waitevent.option").from(editor_id)
+  local event_count = require("waitevent.option").count_event(opts)
   local nvim_path = vim.v.progpath
   local nvim_address = vim.v.servername
   local script = vim.api.nvim_get_runtime_file("lua/waitevent/script.lua", false)[1]
-  return ([[%s -ll %s %s %s %d]]):format(nvim_path, script, nvim_path, nvim_address, editor_id)
+  return ([[%s -ll %s %s %s %d %d]]):format(nvim_path, script, nvim_path, nvim_address, event_count, editor_id)
 end
 
-function M.open(path, address, editor_id)
+function M.open(path, server_address, editor_id)
   local opts = require("waitevent.option").from(editor_id)
 
   local original_window_id = vim.api.nvim_get_current_win()
   opts.open(path)
+
+  if require("waitevent.option").count_event(opts) == 0 then
+    return ""
+  end
+
   local window_id = vim.api.nvim_get_current_win()
   local bufnr = vim.api.nvim_win_get_buf(window_id)
-
   local group_name = ("waitevent_%s_%s"):format(bufnr, window_id)
   local group = vim.api.nvim_create_augroup(group_name, {})
 
@@ -25,7 +31,7 @@ function M.open(path, address, editor_id)
     original_window_id = original_window_id,
     window_id = window_id,
   }
-  local ch = vim.fn.sockconnect("tcp", address)
+  local ch = vim.fn.sockconnect("tcp", server_address)
   local finished = false
 
   if #opts.done_events > 0 then

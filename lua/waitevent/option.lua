@@ -64,4 +64,8 @@ function M.from(editor_id)
   return _store[editor_id] or M.new()
 end
 
+function M.count_event(opts)
+  return #opts.done_events + #opts.cancel_events
+end
+
 return M

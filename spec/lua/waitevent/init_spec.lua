@@ -69,6 +69,33 @@ describe("waitevent.editor()", function()
     assert.equal(0, exit_code)
   end)
 
+  it("opens without waiting by server if events are empty", function()
+    local file_path = helper.test_data:create_file("file")
+
+    local called = false
+    local editor = waitevent.editor({
+      done_events = {},
+      on_done = function()
+        called = true
+      end,
+      cancel_events = {},
+    })
+    local cmd = editor .. " " .. file_path
+
+    local exit_code
+    local job_id = helper.job_start(cmd, {
+      on_exit = function(_, code)
+        exit_code = code
+      end,
+    })
+
+    helper.wait_autocmd("BufRead", file_path)
+
+    helper.job_wait(job_id)
+    assert.equal(0, exit_code)
+    assert.is_false(called)
+  end)
+
   it("raises an error if nvim server communication fails", function()
     local file_path = helper.test_data:create_file("file")
 
