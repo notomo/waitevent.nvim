@@ -36,8 +36,8 @@ local open_editor = function(server_address, nvim_path, nvim_address, editor_id,
   end)
 end
 
-local wait_message_once = function(server, event_count)
-  if event_count == 0 then
+local wait_message_once = function(server, need_server)
+  if not need_server then
     server:close()
     return true
   end
@@ -64,20 +64,17 @@ local wait_message_once = function(server, event_count)
 end
 
 local main = function(args)
-  local nvim_path = args[1]
-  local nvim_address = args[2]
-  local event_count = tonumber(args[3])
-  local editor_id = args[4]
-  local file_path = args[5]
+  local variables = vim.json.decode(args[1])
+  local file_path = args[2]
 
   local server = vim.loop.new_tcp()
   server:bind("127.0.0.1", 0)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, nvim_path, nvim_address, editor_id, file_path)
+  open_editor(server_address, variables.nvim_path, variables.nvim_address, variables.editor_id, file_path)
 
-  local ok = wait_message_once(server, event_count)
+  local ok = wait_message_once(server, variables.need_server)
   if not ok then
     os.exit(1)
   end

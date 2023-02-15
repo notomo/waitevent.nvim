@@ -1,8 +1,9 @@
 local vim = vim
 
 local M = {}
+M.__index = M
 
-M.default = {
+local default = {
   open = function(path)
     vim.cmd.tabedit(path)
     vim.bo.bufhidden = "wipe"
@@ -37,7 +38,8 @@ M.default = {
 local new = function(raw_opts)
   vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
-  return vim.tbl_deep_extend("force", M.default, raw_opts)
+  local opts = vim.tbl_deep_extend("force", default, raw_opts)
+  return setmetatable(opts, M)
 end
 
 local default_editor_id = 0
@@ -61,11 +63,11 @@ function M.store(raw_opts)
 end
 
 function M.from(editor_id)
-  return _store[editor_id] or M.new()
+  return _store[editor_id] or new()
 end
 
-function M.count_event(opts)
-  return #opts.done_events + #opts.cancel_events
+function M.need_server(self)
+  return #self.done_events + #self.cancel_events > 0
 end
 
 return M

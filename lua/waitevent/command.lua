@@ -1,24 +1,31 @@
 local vim = vim
+local Option = require("waitevent.option")
 
 local M = {}
 
 function M.editor(raw_opts)
-  local editor_id = require("waitevent.option").store(raw_opts)
-  local opts = require("waitevent.option").from(editor_id)
-  local event_count = require("waitevent.option").count_event(opts)
+  local editor_id = Option.store(raw_opts)
+  local opts = Option.from(editor_id)
+
   local nvim_path = vim.v.progpath
-  local nvim_address = vim.v.servername
+  local variables = {
+    nvim_path = nvim_path,
+    nvim_address = vim.v.servername,
+    need_server = opts:need_server(),
+    editor_id = editor_id,
+  }
+
   local script = vim.api.nvim_get_runtime_file("lua/waitevent/script.lua", false)[1]
-  return ([[%s -ll %s %s %s %d %d]]):format(nvim_path, script, nvim_path, nvim_address, event_count, editor_id)
+  return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 
 function M.open(path, server_address, editor_id)
-  local opts = require("waitevent.option").from(editor_id)
+  local opts = Option.from(editor_id)
 
   local original_window_id = vim.api.nvim_get_current_win()
   opts.open(path)
 
-  if require("waitevent.option").count_event(opts) == 0 then
+  if not opts:need_server() then
     return ""
   end
 
