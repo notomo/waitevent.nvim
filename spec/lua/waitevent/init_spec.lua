@@ -69,6 +69,32 @@ describe("waitevent.editor()", function()
     assert.equal(0, exit_code)
   end)
 
+  it("can access triggered autocmd data in callback", function()
+    local file_path = helper.test_data:create_file("file")
+
+    local triggered_event
+    local editor = waitevent.editor({
+      on_done = function(ctx)
+        triggered_event = ctx.autocmd.event
+      end,
+    })
+    local cmd = editor .. " " .. file_path
+
+    local exit_code
+    local job_id = helper.job_start(cmd, {
+      on_exit = function(_, code)
+        exit_code = code
+      end,
+    })
+
+    helper.wait_autocmd("BufRead", file_path)
+    vim.cmd.write({ mods = { silent = true } })
+
+    helper.job_wait(job_id)
+    assert.equal(0, exit_code)
+    assert.equal("BufWritePost", triggered_event)
+  end)
+
   it("opens without waiting by server if events are empty", function()
     local file_path = helper.test_data:create_file("file")
 

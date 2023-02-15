@@ -34,10 +34,13 @@ function M.open(path, server_address, editor_id)
   local group_name = ("waitevent_%s_%s"):format(bufnr, window_id)
   local group = vim.api.nvim_create_augroup(group_name, {})
 
-  local ctx = {
-    original_window_id = original_window_id,
-    window_id = window_id,
-  }
+  local new_ctx = function(autocmd)
+    return {
+      original_window_id = original_window_id,
+      window_id = window_id,
+      autocmd = autocmd,
+    }
+  end
   local ch = vim.fn.sockconnect("tcp", server_address)
   local finished = false
 
@@ -46,7 +49,7 @@ function M.open(path, server_address, editor_id)
       group = group,
       buffer = bufnr,
       once = true,
-      callback = function()
+      callback = function(autocmd)
         if finished then
           return
         end
@@ -55,7 +58,7 @@ function M.open(path, server_address, editor_id)
         vim.fn.chansend(ch, "done")
         vim.api.nvim_clear_autocmds({ group = group })
 
-        opts.on_done(ctx)
+        opts.on_done(new_ctx(autocmd))
       end,
     })
   end
@@ -65,7 +68,7 @@ function M.open(path, server_address, editor_id)
       group = group,
       buffer = bufnr,
       once = true,
-      callback = function()
+      callback = function(autocmd)
         if finished then
           return
         end
@@ -74,7 +77,7 @@ function M.open(path, server_address, editor_id)
         vim.fn.chansend(ch, "cancel")
         vim.api.nvim_clear_autocmds({ group = group })
 
-        opts.on_canceled(ctx)
+        opts.on_canceled(new_ctx(autocmd))
       end,
     })
   end
