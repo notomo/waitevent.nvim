@@ -14,14 +14,31 @@ local open_editor = function(address, args)
       editor_id
     ),
   }
+
+  local stderr = vim.loop.new_pipe()
+
   local opts = {
     args = cmd_args,
+    stdio = { nil, nil, stderr },
   }
-  -- TODO: stderr handling
-  local _, pid_or_err = vim.loop.spawn(nvim_path, opts, function(_, _) end)
+  local stderrs = {}
+  local _, pid_or_err = vim.loop.spawn(nvim_path, opts, function(code)
+    if code == 0 or #stderrs == 0 then
+      stderr:close()
+      return
+    end
+    error(("failed to comunicate with %s: %s"):format(nvim_address, table.concat(stderrs, "\n")))
+  end)
   if type(pid_or_err) ~= "number" then
     error(pid_or_err)
   end
+
+  vim.loop.read_start(stderr, function(err, data)
+    assert(not err, err)
+    if data then
+      table.insert(stderrs, data)
+    end
+  end)
 end
 
 local wait_message_once = function(server)
