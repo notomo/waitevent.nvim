@@ -34,9 +34,9 @@ local wait_message_once = function(server)
     server:accept(socket)
 
     socket:read_start(function(read_err, message)
-      socket:close()
       assert(not read_err, read_err)
       ok = message == "done"
+      socket:close()
       server:close()
     end)
   end)
