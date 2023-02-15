@@ -24,6 +24,11 @@ function helper.job_wait(job_id)
 end
 
 function helper.wait_autocmd(events, pattern)
+  vim.validate({
+    events = { events, "string", "table" },
+    pattern = { pattern, "string" },
+  })
+
   local called = false
   local group = vim.api.nvim_create_augroup("waitevent_test", {})
   vim.api.nvim_create_autocmd(events, {
@@ -40,6 +45,21 @@ function helper.wait_autocmd(events, pattern)
   if not ok then
     error("wait_autocmd timeout")
   end
+end
+
+function helper.job_start(cmd, raw_opts)
+  local default = {
+    on_stdout = function(_, data)
+      print(table.concat(data, "\n"))
+    end,
+    on_stderr = function(_, data)
+      print(table.concat(data, "\n"))
+    end,
+    stderr_buffered = true,
+    stdout_buffered = true,
+  }
+  local opts = vim.tbl_deep_extend("force", default, raw_opts or {})
+  return vim.fn.jobstart(cmd, opts)
 end
 
 local asserts = require("vusted.assert").asserts
