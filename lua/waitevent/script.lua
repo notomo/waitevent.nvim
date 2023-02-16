@@ -1,4 +1,5 @@
-local open_editor = function(server_address, nvim_path, nvim_address, editor_id, file_path)
+local open_editor = function(server_address, nvim_path, editor_id, file_path)
+  local nvim_address = os.getenv("NVIM")
   local cmd_args = {
     "--server",
     nvim_address,
@@ -39,6 +40,7 @@ end
 local wait_message_once = function(server, need_server)
   if not need_server then
     server:close()
+    vim.loop.run()
     return true
   end
 
@@ -72,7 +74,7 @@ local main = function(args)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, variables.nvim_path, variables.nvim_address, variables.editor_id, file_path)
+  open_editor(server_address, variables.nvim_path, variables.editor_id, file_path)
 
   local ok = wait_message_once(server, variables.need_server)
   if not ok then

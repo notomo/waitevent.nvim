@@ -7,15 +7,14 @@ function M.editor(raw_opts)
   local editor_id = Option.store(raw_opts)
   local opts = Option.from(editor_id)
 
-  local nvim_path = vim.v.progpath
+  local nvim_path = vim.fs.normalize(vim.v.progpath)
   local variables = {
     nvim_path = nvim_path,
-    nvim_address = vim.v.servername,
     need_server = opts:need_server(),
     editor_id = editor_id,
   }
 
-  local script = vim.api.nvim_get_runtime_file("lua/waitevent/script.lua", false)[1]
+  local script = vim.fs.normalize(vim.api.nvim_get_runtime_file("lua/waitevent/script.lua", false)[1])
   return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 

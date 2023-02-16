@@ -123,6 +123,10 @@ describe("waitevent.editor()", function()
   end)
 
   it("raises an error if nvim server communication fails", function()
+    if vim.fn.has("win32") == 1 then
+      pending("skip on windows")
+    end
+
     local file_path = helper.test_data:create_file("file")
 
     local editor = waitevent.editor({
