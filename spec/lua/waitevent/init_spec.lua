@@ -3,7 +3,13 @@ local waitevent = helper.require("waitevent")
 
 describe("waitevent.editor()", function()
   before_each(helper.before_each)
-  after_each(helper.after_each)
+
+  local job_id
+  after_each(function()
+    pcall(vim.fn.jobstop, job_id)
+    job_id = nil
+    helper.after_each()
+  end)
 
   it("returns executable string as EDITOR", function()
     local file_path = helper.test_data:create_file("file")
@@ -11,7 +17,7 @@ describe("waitevent.editor()", function()
     local cmd = editor .. " " .. file_path
 
     local exit_code
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
@@ -30,7 +36,7 @@ describe("waitevent.editor()", function()
     local cmd = editor .. " " .. file_path
 
     local exit_code
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
@@ -54,7 +60,7 @@ describe("waitevent.editor()", function()
     local cmd = editor .. " " .. file_path
 
     local exit_code
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
@@ -81,7 +87,7 @@ describe("waitevent.editor()", function()
     local cmd = editor .. " " .. file_path
 
     local exit_code
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
@@ -109,7 +115,7 @@ describe("waitevent.editor()", function()
     local cmd = editor .. " " .. file_path
 
     local exit_code
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
@@ -141,7 +147,7 @@ describe("waitevent.editor()", function()
 
     local exit_code
     local err = ""
-    local job_id = helper.job_start(cmd, {
+    job_id = helper.job_start(cmd, {
       on_exit = function(_, code)
         exit_code = code
       end,
