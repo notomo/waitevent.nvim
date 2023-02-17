@@ -13,13 +13,13 @@ local default = {
     "BufWritePost",
   },
   on_done = function(ctx)
-    if vim.api.nvim_win_is_valid(ctx.window_id) and #vim.api.nvim_list_wins() > 1 then
-      vim.api.nvim_win_close(ctx.window_id, true)
+    if vim.api.nvim_win_is_valid(ctx.window_id_after_open) and #vim.api.nvim_list_wins() > 1 then
+      vim.api.nvim_win_close(ctx.window_id_after_open, true)
     end
-    if not vim.api.nvim_win_is_valid(ctx.original_window_id) then
+    if not vim.api.nvim_win_is_valid(ctx.window_id_before_open) then
       return
     end
-    vim.api.nvim_set_current_win(ctx.original_window_id)
+    vim.api.nvim_set_current_win(ctx.window_id_before_open)
   end,
 
   cancel_events = {
@@ -28,10 +28,10 @@ local default = {
     "BufWipeout",
   },
   on_canceled = function(ctx)
-    if not vim.api.nvim_win_is_valid(ctx.original_window_id) then
+    if not vim.api.nvim_win_is_valid(ctx.window_id_before_open) then
       return
     end
-    vim.api.nvim_set_current_win(ctx.original_window_id)
+    vim.api.nvim_set_current_win(ctx.window_id_before_open)
   end,
 }
 

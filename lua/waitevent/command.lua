@@ -26,22 +26,22 @@ end
 function M.open(path, server_address, editor_id)
   local opts = Option.from(editor_id)
 
-  local original_window_id = vim.api.nvim_get_current_win()
+  local window_id_before_open = vim.api.nvim_get_current_win()
   opts.open(path)
 
   if not opts:need_server() then
     return ""
   end
 
-  local window_id = vim.api.nvim_get_current_win()
-  local bufnr = vim.api.nvim_win_get_buf(window_id)
-  local group_name = ("waitevent_%s_%s"):format(bufnr, window_id)
+  local window_id_after_open = vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_win_get_buf(window_id_after_open)
+  local group_name = ("waitevent_%s_%s"):format(bufnr, window_id_after_open)
   local group = vim.api.nvim_create_augroup(group_name, {})
 
   local new_ctx = function(autocmd)
     return {
-      original_window_id = original_window_id,
-      window_id = window_id,
+      window_id_before_open = window_id_before_open,
+      window_id_after_open = window_id_after_open,
       autocmd = autocmd,
     }
   end
