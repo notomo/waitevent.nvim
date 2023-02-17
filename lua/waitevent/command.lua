@@ -8,8 +8,13 @@ function M.editor(raw_opts)
   local opts = Option.from(editor_id)
 
   local nvim_path = vim.fs.normalize(vim.v.progpath)
+  local nvim_address = vim.v.servername
+  if vim.fn.filereadable(nvim_address) == 1 then
+    nvim_address = vim.fs.normalize(nvim_address)
+  end
   local variables = {
     nvim_path = nvim_path,
+    nvim_address = nvim_address,
     need_server = opts:need_server(),
     editor_id = editor_id,
   }
