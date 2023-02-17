@@ -22,6 +22,11 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
       vim.bo.bufhidden = "wipe"
     end,
   })
+
+  vim.env.EDITOR = require("waitevent").editor({
+    done_events = {},
+    cancel_events = {},
+  })
 <
 
 ==============================================================================
