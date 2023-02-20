@@ -13,6 +13,10 @@ local M = {}
 --- @field autocmd table: |nvim_create_autocmd()| callback argument
 
 --- Returns executable string to use EDITOR environment variable.
+--- This executable string uses current opened neovim as editor.
+--- if done_events and cancel_events are empty, the EDITOR process finishes as soon as open file.
+--- Otherwise, the process waits firing autocmd that be defined done_events or cancel_events.
+--- This can use with :terminal or jobstart() or vim.loop.spawn() .
 --- @param opts waitevent_editor_option?: |waitevent_editor_option|
 --- @return string: to use EDITOR
 function M.editor(opts)

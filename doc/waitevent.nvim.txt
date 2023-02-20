@@ -5,6 +5,10 @@ Lua module: waitevent                               *waitevent.nvim-waitevent*
 
 editor({opts})                                            *waitevent.editor()*
   Returns executable string to use EDITOR environment variable.
+  This executable string uses current opened neovim as editor.
+  if done_events and cancel_events are empty, the EDITOR process finishes as soon as open file.
+  Otherwise, the process waits firing autocmd that be defined done_events or cancel_events.
+  This can use with :terminal or jobstart() or vim.loop.spawn() .
 
   Parameters: ~
     {opts} (waitevent_editor_option?) |waitevent_editor_option|
@@ -33,6 +37,8 @@ waitevent_context                                          *waitevent_context*
 EXAMPLES                                             *waitevent.nvim-EXAMPLES*
 
 >
+  -- Use for git command editor.
+  -- This editor finishes the process on save or close.
   vim.env.GIT_EDITOR = require("waitevent").editor({
     open = function(path)
       vim.cmd.split(path)
@@ -40,6 +46,11 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
     end,
   })
 
+  -- Use for `nvim {file_path}` in :terminal.
+  -- This editor finishes the process as soon as open.
+  -- The fowllowing shell settings is convinient (optional).
+  -- `export EDITOR=nvim` in .bash_profile
+  -- `alias nvim="${EDITOR}"` in .bashrc
   vim.env.EDITOR = require("waitevent").editor({
     done_events = {},
     cancel_events = {},
