@@ -7,10 +7,27 @@ editor({opts})                                            *waitevent.editor()*
   Returns executable string to use EDITOR environment variable.
 
   Parameters: ~
-    {opts} (table|nil) TODO
+    {opts} (waitevent_editor_option?) |waitevent_editor_option|
 
   Return: ~
     (string) to use EDITOR
+
+==============================================================================
+STRUCTURE                                           *waitevent.nvim-STRUCTURE*
+
+waitevent_editor_option                              *waitevent_editor_option*
+
+- {open} (fun(path:string)) function that be called to open file
+- {done_events} (string[]) autocmd events that treated as done
+- {on_done} (fun(ctx:waitevent_context)) function that called on done editor. |waitevent_context|
+- {cancel_events} (string[]) autocmd events that treated as cancel
+- {on_canceled} (fun(ctx:waitevent_context)) function that called on canceled editor. |waitevent_context|
+
+waitevent_context                                          *waitevent_context*
+
+- {window_id_before_open} (integer) |window-ID| before |waitevent_editor_option|.open
+- {window_id_after_open} (integer) |window-ID| after |waitevent_editor_option|.open
+- {autocmd} (table) |nvim_create_autocmd()| callback argument
 
 ==============================================================================
 EXAMPLES                                             *waitevent.nvim-EXAMPLES*
