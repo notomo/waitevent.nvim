@@ -26,7 +26,7 @@ end
 function helper.wait_autocmd(events, pattern)
   vim.validate({
     events = { events, "string", "table" },
-    pattern = { pattern, "string" },
+    pattern = { pattern, "string", true },
   })
 
   local called = false

@@ -1,5 +1,7 @@
 local open_editor = function(server_address, nvim_path, nvim_address, editor_id, file_path)
+  file_path = file_path or ""
   nvim_address = os.getenv("NVIM") or nvim_address
+
   local cmd_args = {
     "--server",
     nvim_address,

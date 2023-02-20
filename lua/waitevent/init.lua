@@ -1,7 +1,7 @@
 local M = {}
 
 --- @class waitevent_editor_option
---- @field open fun(path:string) function that be called to open file
+--- @field open fun(path:string?) function that be called to open file
 --- @field done_events string[] autocmd events that treated as done
 --- @field on_done fun(ctx:waitevent_context) function that called on done editor. |waitevent_context|
 --- @field cancel_events string[] autocmd events that treated as cancel

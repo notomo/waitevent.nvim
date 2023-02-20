@@ -23,11 +23,13 @@ function M.editor(raw_opts)
   return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 
-function M.open(path, server_address, editor_id)
+function M.open(file_path, server_address, editor_id)
+  file_path = file_path ~= "" and file_path or nil
+
   local opts = Option.from(editor_id)
 
   local window_id_before_open = vim.api.nvim_get_current_win()
-  opts.open(path)
+  opts.open(file_path)
 
   if not opts:need_server() then
     return ""
