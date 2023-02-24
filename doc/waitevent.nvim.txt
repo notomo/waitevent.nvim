@@ -11,7 +11,7 @@ editor({opts})                                            *waitevent.editor()*
   This can use with :terminal or jobstart() or vim.loop.spawn() .
 
   Parameters: ~
-    {opts} (waitevent_editor_option?) |waitevent_editor_option|
+    {opts} (WaiteventEditorOption?) |WaiteventEditorOption|
 
   Return: ~
     (string) to use EDITOR
@@ -19,18 +19,18 @@ editor({opts})                                            *waitevent.editor()*
 ==============================================================================
 STRUCTURE                                           *waitevent.nvim-STRUCTURE*
 
-waitevent_editor_option                              *waitevent_editor_option*
+WaiteventEditorOption                                  *WaiteventEditorOption*
 
 - {open} (fun(path:string?)) function that be called to open file
 - {done_events} (string[]) autocmd events that treated as done
-- {on_done} (fun(ctx:waitevent_context)) function that called on done editor. |waitevent_context|
+- {on_done} (fun(ctx:WaiteventContext)) function that called on done editor. |WaiteventContext|
 - {cancel_events} (string[]) autocmd events that treated as cancel
-- {on_canceled} (fun(ctx:waitevent_context)) function that called on canceled editor. |waitevent_context|
+- {on_canceled} (fun(ctx:WaiteventContext)) function that called on canceled editor. |WaiteventContext|
 
-waitevent_context                                          *waitevent_context*
+WaiteventContext                                            *WaiteventContext*
 
-- {window_id_before_open} (integer) |window-ID| before |waitevent_editor_option|.open
-- {window_id_after_open} (integer) |window-ID| after |waitevent_editor_option|.open
+- {window_id_before_open} (integer) |window-ID| before |WaiteventEditorOption|.open
+- {window_id_after_open} (integer) |window-ID| after |WaiteventEditorOption|.open
 - {autocmd} (table) |nvim_create_autocmd()| callback argument
 
 ==============================================================================
