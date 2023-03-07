@@ -18,7 +18,7 @@ local M = {}
 --- Otherwise, the process waits firing autocmd that be defined done_events or cancel_events.
 --- This can use with :terminal or jobstart() or vim.loop.spawn() .
 --- @param opts WaiteventEditorOption?: |WaiteventEditorOption|
---- @return string: to use EDITOR
+--- @return string # to use EDITOR
 function M.editor(opts)
   return require("waitevent.command").editor(opts)
 end
