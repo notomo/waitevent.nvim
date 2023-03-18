@@ -45,8 +45,7 @@ function M.open(decoded_variables)
 
   local opts = Option.from(variables.editor_id)
 
-  -- can cwd be nil?
-  local working_dir = vim.fs.normalize(variables.working_dir or vim.fn.fnamemodify(vim.fn.getcwd(-1, -1), ":p"))
+  local working_dir = vim.fs.normalize(variables.working_dir)
   local open_ctx = {
     working_dir = working_dir,
     lcd = function()

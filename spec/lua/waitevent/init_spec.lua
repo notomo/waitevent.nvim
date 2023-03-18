@@ -106,6 +106,9 @@ describe("waitevent.editor()", function()
 
     assert.buffer_full_name("")
     assert.tab_count(2)
+
+    vim.cmd.bwipeout()
+    helper.job_wait(job_id)
   end)
 
   it("can use with multiple file paths", function()
@@ -118,6 +121,9 @@ describe("waitevent.editor()", function()
     helper.wait_autocmd("TabNew")
 
     assert.tab_count(3)
+
+    vim.cmd.bwipeout()
+    helper.job_wait(job_id)
   end)
 
   it("can use with relative path", function()
@@ -132,6 +138,9 @@ describe("waitevent.editor()", function()
     helper.wait_autocmd("TabNew")
 
     assert.buffer_full_name(file_path)
+
+    vim.cmd.bwipeout()
+    helper.job_wait(job_id)
   end)
 
   it("can access triggered autocmd data in callback", function()
