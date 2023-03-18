@@ -10,6 +10,10 @@ local open_editor = function(server_address, nvim_path, nvim_address, editor_id,
   local cmd_args = {
     "--server",
     nvim_address,
+    "-u",
+    "NONE",
+    "-i",
+    "NONE",
     "--remote-expr",
     ([=[luaeval("require([[waitevent.command]]).open(_A[1])", [%q])]=]):format(vim.json.encode(variables)),
   }
