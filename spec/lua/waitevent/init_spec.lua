@@ -45,7 +45,7 @@ describe("waitevent.editor()", function()
     })
 
     helper.wait_autocmd("BufRead", file_path)
-    assert.equal(dir_path, vim.fn.getcwd(0))
+    assert.equal(dir_path, vim.fs.normalize(vim.fn.getcwd(0)))
     vim.cmd.write({ mods = { silent = true } })
 
     helper.job_wait(job_id)
