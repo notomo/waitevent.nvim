@@ -59,10 +59,6 @@ function helper.job_start(cmd, raw_opts)
     stdout_buffered = true,
   }
   local opts = vim.tbl_deep_extend("force", default, raw_opts or {})
-  if vim.fn.has("win32") == 1 then
-    local shell_cmd = ([[cmd.exe /c %s]]):format(vim.fn.shellescape(cmd))
-    return vim.fn.jobstart(shell_cmd, opts)
-  end
   return vim.fn.jobstart(cmd, opts)
 end
 
