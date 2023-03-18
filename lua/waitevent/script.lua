@@ -2,15 +2,16 @@ local open_editor = function(server_address, nvim_path, nvim_address, editor_id,
   file_path = file_path or ""
   nvim_address = os.getenv("NVIM") or nvim_address
 
+  local variables = {
+    file_path = file_path,
+    server_address = server_address,
+    editor_id = editor_id,
+  }
   local cmd_args = {
     "--server",
     nvim_address,
     "--remote-expr",
-    ([=[luaeval("require([[waitevent.command]]).open(_A[1], _A[2], _A[3])", [%q, %q, %d])]=]):format(
-      file_path,
-      server_address,
-      editor_id
-    ),
+    ([=[luaeval("require([[waitevent.command]]).open(_A[1])", [%q])]=]):format(vim.json.encode(variables)),
   }
 
   local stderr = vim.loop.new_pipe()

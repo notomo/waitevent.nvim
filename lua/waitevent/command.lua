@@ -23,10 +23,11 @@ function M.editor(raw_opts)
   return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 
-function M.open(file_path, server_address, editor_id)
-  file_path = file_path ~= "" and file_path or nil
+function M.open(decoded_variables)
+  local variables = vim.json.decode(decoded_variables)
+  local file_path = variables.file_path ~= "" and variables.file_path or nil
 
-  local opts = Option.from(editor_id)
+  local opts = Option.from(variables.editor_id)
 
   local window_id_before_open = vim.api.nvim_get_current_win()
   opts.open(file_path)
@@ -47,7 +48,7 @@ function M.open(file_path, server_address, editor_id)
       autocmd = autocmd,
     }
   end
-  local ch = vim.fn.sockconnect("tcp", server_address)
+  local ch = vim.fn.sockconnect("tcp", variables.server_address)
   local finished = false
 
   if #opts.done_events > 0 then
