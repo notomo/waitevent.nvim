@@ -26,7 +26,7 @@ local is_relative_path = function(file_path)
   if vim.startswith(file_path, "/") then
     return false
   end
-  if file_path:match("[a-zA-Z][a-zA-Z0-9+-.]*:/") then
+  if file_path:match("^[a-zA-Z][a-zA-Z0-9+-.]*:/") then
     return false
   end
   return true
