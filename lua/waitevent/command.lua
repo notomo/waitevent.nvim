@@ -22,12 +22,31 @@ function M.editor(raw_opts)
   return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 
+local is_relative_path = function(file_path)
+  if vim.startswith(file_path, "/") then
+    return false
+  end
+  if file_path:match("[a-zA-Z][a-zA-Z0-9+-.]*:/") then
+    return false
+  end
+  return true
+end
+
+local to_absolute_path = function(working_dir, file_path)
+  file_path = vim.fs.normalize(file_path)
+  if is_relative_path(file_path) then
+    return vim.fn.simplify(working_dir .. "/" .. file_path)
+  end
+  return file_path
+end
+
 function M.open(decoded_variables)
   local variables = vim.json.decode(decoded_variables)
 
   local opts = Option.from(variables.editor_id)
 
-  local working_dir = variables.working_dir
+  -- can cwd be nil?
+  local working_dir = vim.fs.normalize(variables.working_dir or vim.fn.fnamemodify(vim.fn.getcwd(-1, -1), ":p"))
   local open_ctx = {
     working_dir = working_dir,
     lcd = function()
@@ -36,8 +55,12 @@ function M.open(decoded_variables)
     end,
   }
 
+  local file_paths = vim.tbl_map(function(file_path)
+    return to_absolute_path(working_dir, file_path)
+  end, variables.file_paths)
+
   local window_id_before_open = vim.api.nvim_get_current_win()
-  opts.open(open_ctx, unpack(variables.file_paths))
+  opts.open(open_ctx, unpack(file_paths))
 
   if not opts:need_server() then
     return ""

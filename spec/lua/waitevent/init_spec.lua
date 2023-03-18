@@ -120,6 +120,20 @@ describe("waitevent.editor()", function()
     assert.tab_count(3)
   end)
 
+  it("can use with relative path", function()
+    local file_path = helper.test_data:create_file("file")
+    local editor = waitevent.editor()
+    local cmd = editor .. " " .. "file"
+    local dir_path = vim.fn.fnamemodify(file_path, ":h")
+
+    job_id = helper.job_start(cmd, {
+      cwd = dir_path,
+    })
+    helper.wait_autocmd("TabNew")
+
+    assert.buffer_full_name(file_path)
+  end)
+
   it("can access triggered autocmd data in callback", function()
     local file_path = helper.test_data:create_file("file")
 
