@@ -31,10 +31,17 @@ vim.env.EDITOR = require("waitevent").editor({
 
 -- all default options
 local default = {
-  open = function(ctx, path)
-    vim.cmd.tabedit(path)
-    ctx.lcd()
-    vim.bo.bufhidden = "wipe"
+  open = function(ctx, ...)
+    local paths = { ... }
+    for _, path in ipairs(paths) do
+      vim.cmd.tabedit(path)
+      ctx.lcd()
+      vim.bo.bufhidden = "wipe"
+    end
+    if #paths == 0 then
+      vim.cmd.tabedit()
+      ctx.lcd()
+    end
   end,
 
   done_events = {

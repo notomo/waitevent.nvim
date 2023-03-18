@@ -101,18 +101,23 @@ describe("waitevent.editor()", function()
   it("can use without file path", function()
     local cmd = waitevent.editor()
 
-    local exit_code
-    job_id = helper.job_start(cmd, {
-      on_exit = function(_, code)
-        exit_code = code
-      end,
-    })
-
+    job_id = helper.job_start(cmd)
     helper.wait_autocmd("TabNew")
-    vim.cmd.bwipeout()
 
-    helper.job_wait(job_id)
-    assert.equal(1, exit_code)
+    assert.buffer_full_name("")
+    assert.tab_count(2)
+  end)
+
+  it("can use with multiple file paths", function()
+    local file_path1 = helper.test_data:create_file("file")
+    local file_path2 = helper.test_data:create_file("file")
+    local editor = waitevent.editor()
+    local cmd = editor .. " " .. file_path1 .. " " .. file_path2
+
+    job_id = helper.job_start(cmd)
+    helper.wait_autocmd("TabNew")
+
+    assert.tab_count(3)
   end)
 
   it("can access triggered autocmd data in callback", function()

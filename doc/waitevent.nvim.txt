@@ -26,7 +26,7 @@ WaiteventOpenContext                                    *WaiteventOpenContext*
 
 WaiteventEditorOption                                  *WaiteventEditorOption*
 
-- {open} (fun(ctx:WaiteventOpenContext,path:string?)) function that be called to open file
+- {open} (fun(ctx:WaiteventOpenContext,...:string)) function that be called to open files
 - {done_events} (string[]) autocmd events that treated as done
 - {on_done} (fun(ctx:WaiteventContext)) function that called on done editor. |WaiteventContext|
 - {cancel_events} (string[]) autocmd events that treated as cancel
@@ -64,10 +64,17 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
 
   -- all default options
   local default = {
-    open = function(ctx, path)
-      vim.cmd.tabedit(path)
-      ctx.lcd()
-      vim.bo.bufhidden = "wipe"
+    open = function(ctx, ...)
+      local paths = { ... }
+      for _, path in ipairs(paths) do
+        vim.cmd.tabedit(path)
+        ctx.lcd()
+        vim.bo.bufhidden = "wipe"
+      end
+      if #paths == 0 then
+        vim.cmd.tabedit()
+        ctx.lcd()
+      end
     end,
 
     done_events = {

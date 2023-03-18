@@ -24,11 +24,8 @@ end
 
 function M.open(decoded_variables)
   local variables = vim.json.decode(decoded_variables)
-  local file_path = variables.file_path ~= "" and variables.file_path or nil
 
   local opts = Option.from(variables.editor_id)
-
-  local window_id_before_open = vim.api.nvim_get_current_win()
 
   local working_dir = variables.working_dir
   local open_ctx = {
@@ -38,7 +35,9 @@ function M.open(decoded_variables)
       vim.cmd.lcd({ args = { escaped_working_dir }, mods = { silent = true } })
     end,
   }
-  opts.open(open_ctx, file_path)
+
+  local window_id_before_open = vim.api.nvim_get_current_win()
+  opts.open(open_ctx, unpack(variables.file_paths))
 
   if not opts:need_server() then
     return ""
