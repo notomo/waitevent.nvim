@@ -1,4 +1,4 @@
-local open_editor = function(server_address, nvim_path, nvim_address, editor_id, file_path)
+local open_editor = function(server_address, nvim_address, editor_id, file_path)
   file_path = file_path or ""
   nvim_address = os.getenv("NVIM") or nvim_address
 
@@ -26,7 +26,7 @@ local open_editor = function(server_address, nvim_path, nvim_address, editor_id,
     stdio = { nil, nil, stderr },
   }
   local stderrs = {}
-  local _, pid_or_err = vim.loop.spawn(nvim_path, opts, function(code)
+  local _, pid_or_err = vim.loop.spawn(vim.loop.exepath(), opts, function(code)
     if code == 0 or #stderrs == 0 then
       stderr:close()
       return
@@ -82,7 +82,7 @@ local main = function(args)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, variables.nvim_path, variables.nvim_address, variables.editor_id, file_path)
+  open_editor(server_address, variables.nvim_address, variables.editor_id, file_path)
 
   local ok = wait_message_once(server, variables.need_server)
   if not ok then
