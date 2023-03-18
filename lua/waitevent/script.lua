@@ -6,6 +6,7 @@ local open_editor = function(server_address, nvim_path, nvim_address, editor_id,
     file_path = file_path,
     server_address = server_address,
     editor_id = editor_id,
+    working_dir = vim.loop.cwd(),
   }
   local cmd_args = {
     "--server",

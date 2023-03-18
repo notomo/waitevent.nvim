@@ -1,8 +1,9 @@
 -- Use for git command editor.
 -- This editor finishes the process on save or close.
 vim.env.GIT_EDITOR = require("waitevent").editor({
-  open = function(path)
+  open = function(ctx, path)
     vim.cmd.split(path)
+    ctx.lcd()
     vim.bo.bufhidden = "wipe"
   end,
 })

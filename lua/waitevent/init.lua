@@ -1,7 +1,11 @@
 local M = {}
 
+--- @class WaiteventOpenContext
+--- @field working_dir string EDITOR process working directory
+--- @field lcd fun() function to change window local directory with working_dir
+
 --- @class WaiteventEditorOption
---- @field open fun(path:string?) function that be called to open file
+--- @field open fun(ctx:WaiteventOpenContext,path:string?) function that be called to open file
 --- @field done_events string[] autocmd events that treated as done
 --- @field on_done fun(ctx:WaiteventContext) function that called on done editor. |WaiteventContext|
 --- @field cancel_events string[] autocmd events that treated as cancel

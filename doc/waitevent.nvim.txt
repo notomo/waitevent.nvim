@@ -19,9 +19,14 @@ editor({opts})                                            *waitevent.editor()*
 ==============================================================================
 STRUCTURE                                           *waitevent.nvim-STRUCTURE*
 
+WaiteventOpenContext                                    *WaiteventOpenContext*
+
+- {working_dir} (string) EDITOR process working directory
+- {lcd} (fun()) function to change window local directory with working_dir
+
 WaiteventEditorOption                                  *WaiteventEditorOption*
 
-- {open} (fun(path:string?)) function that be called to open file
+- {open} (fun(ctx:WaiteventOpenContext,path:string?)) function that be called to open file
 - {done_events} (string[]) autocmd events that treated as done
 - {on_done} (fun(ctx:WaiteventContext)) function that called on done editor. |WaiteventContext|
 - {cancel_events} (string[]) autocmd events that treated as cancel
@@ -40,8 +45,9 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
   -- Use for git command editor.
   -- This editor finishes the process on save or close.
   vim.env.GIT_EDITOR = require("waitevent").editor({
-    open = function(path)
+    open = function(ctx, path)
       vim.cmd.split(path)
+      ctx.lcd()
       vim.bo.bufhidden = "wipe"
     end,
   })
@@ -58,8 +64,9 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
 
   -- all default options
   local default = {
-    open = function(path)
+    open = function(ctx, path)
       vim.cmd.tabedit(path)
+      ctx.lcd()
       vim.bo.bufhidden = "wipe"
     end,
 

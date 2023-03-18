@@ -30,7 +30,16 @@ function M.open(decoded_variables)
   local opts = Option.from(variables.editor_id)
 
   local window_id_before_open = vim.api.nvim_get_current_win()
-  opts.open(file_path)
+
+  local working_dir = variables.working_dir
+  local open_ctx = {
+    working_dir = working_dir,
+    lcd = function()
+      local escaped_working_dir = ([[`='%s'`]]):format(working_dir:gsub("'", "''"))
+      vim.cmd.lcd({ args = { escaped_working_dir }, mods = { silent = true } })
+    end,
+  }
+  opts.open(open_ctx, file_path)
 
   if not opts:need_server() then
     return ""

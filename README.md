@@ -12,8 +12,9 @@ This plugin provides the way to avoid nested nvim.
 -- Use for git command editor.
 -- This editor finishes the process on save or close.
 vim.env.GIT_EDITOR = require("waitevent").editor({
-  open = function(path)
+  open = function(ctx, path)
     vim.cmd.split(path)
+    ctx.lcd()
     vim.bo.bufhidden = "wipe"
   end,
 })
@@ -30,8 +31,9 @@ vim.env.EDITOR = require("waitevent").editor({
 
 -- all default options
 local default = {
-  open = function(path)
+  open = function(ctx, path)
     vim.cmd.tabedit(path)
+    ctx.lcd()
     vim.bo.bufhidden = "wipe"
   end,
 

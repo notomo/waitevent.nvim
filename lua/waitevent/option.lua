@@ -4,8 +4,9 @@ local M = {}
 M.__index = M
 
 local default = {
-  open = function(path)
+  open = function(ctx, path)
     vim.cmd.tabedit(path)
+    ctx.lcd()
     vim.bo.bufhidden = "wipe"
   end,
 
