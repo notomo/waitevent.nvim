@@ -14,6 +14,7 @@ local default = {
     if #paths == 0 then
       vim.cmd.tabedit()
       ctx.tcd()
+      vim.bo.bufhidden = "wipe"
     end
   end,
 
