@@ -72,9 +72,42 @@ local wait_message_once = function(server, need_server)
   return ok
 end
 
+local run_with_option = function(nvim_args)
+  local opts = {
+    args = nvim_args,
+    stdio = { 0, 1, 2 },
+  }
+  local _, pid_or_err = vim.loop.spawn(vim.loop.exepath(), opts, function(code)
+    os.exit(code)
+  end)
+  if type(pid_or_err) ~= "number" then
+    error(pid_or_err)
+  end
+  vim.loop.run()
+end
+
+local extract_file_paths = function(nvim_args)
+  if nvim_args[1] == "--" then
+    return vim.list_slice(nvim_args, 2)
+  end
+
+  for _, arg in ipairs(nvim_args) do
+    if vim.startswith(arg, "-") or vim.startswith(arg, "+") then
+      return nil
+    end
+  end
+
+  return nvim_args
+end
+
 local main = function(args)
   local variables = vim.json.decode(args[1])
-  local file_paths = vim.list_slice(args, 2)
+
+  local nvim_args = vim.list_slice(args, 2)
+  local file_paths = extract_file_paths(nvim_args)
+  if not file_paths then
+    return run_with_option(nvim_args)
+  end
 
   local server = vim.loop.new_tcp()
   server:bind("127.0.0.1", 0)

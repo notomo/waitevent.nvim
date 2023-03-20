@@ -21,6 +21,10 @@ local M = {}
 --- if done_events and cancel_events are empty, the EDITOR process finishes as soon as open file.
 --- Otherwise, the process waits firing autocmd that be defined done_events or cancel_events.
 --- This can use with :terminal or jobstart() or vim.loop.spawn() .
+---
+--- If you specify option with the executable string, it doesn't execute on current opened neovim.
+--- For example, `$EDITOR --version` outputs version as usual.
+--- If you want to open file that has hyphen prefixed name, you can use `$EDITOR -- -file` as usual.
 --- @param opts WaiteventEditorOption?: |WaiteventEditorOption|
 --- @return string # to use EDITOR
 function M.editor(opts)

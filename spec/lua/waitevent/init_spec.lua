@@ -224,4 +224,55 @@ describe("waitevent.editor()", function()
     assert.no.equal(0, exit_code)
     assert.matches("failed to comunicate with", err)
   end)
+
+  it("executes as normal nvim if specified option", function()
+    local editor = waitevent.editor()
+    local cmd = editor .. " -h"
+
+    local exit_code
+    local stdout
+    job_id = helper.job_start(cmd, {
+      on_exit = function(_, code)
+        exit_code = code
+      end,
+      on_stdout = function(_, data)
+        stdout = table.concat(data, "\n")
+      end,
+      stdout_buffered = true,
+    })
+
+    helper.job_wait(job_id)
+    assert.equal(0, exit_code)
+
+    assert.matches("--help", stdout)
+  end)
+
+  it("applies normal nvim exit code", function()
+    local editor = waitevent.editor()
+    local cmd = editor .. " --invalid-flag"
+
+    local exit_code
+    job_id = helper.job_start(cmd, {
+      on_exit = function(_, code)
+        exit_code = code
+      end,
+      on_stdout = function() end,
+      on_stderr = function() end,
+    })
+
+    helper.job_wait(job_id)
+    assert.equal(1, exit_code)
+  end)
+
+  it("can handle -- and hyphen prefixed file name", function()
+    local editor = waitevent.editor()
+    local cmd = editor .. " -- -hyphen-prefix-file"
+
+    job_id = helper.job_start(cmd)
+
+    helper.wait_autocmd("BufNew", "*/-hyphen-prefix-file")
+    vim.cmd.bwipeout()
+
+    helper.job_wait(job_id)
+  end)
 end)
