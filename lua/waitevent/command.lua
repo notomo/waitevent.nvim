@@ -48,9 +48,15 @@ function M.open(decoded_variables)
   local working_dir = vim.fs.normalize(variables.working_dir)
   local open_ctx = {
     working_dir = working_dir,
-    lcd = function()
-      local escaped_working_dir = ([[`='%s'`]]):format(working_dir:gsub("'", "''"))
-      vim.cmd.lcd({ args = { escaped_working_dir }, mods = { silent = true } })
+    lcd = function(path)
+      local dir_path = path or working_dir
+      local escaped = ([[`='%s'`]]):format(dir_path:gsub("'", "''"))
+      vim.cmd.lcd({ args = { escaped }, mods = { silent = true } })
+    end,
+    tcd = function(path)
+      local dir_path = path or working_dir
+      local escaped = ([[`='%s'`]]):format(dir_path:gsub("'", "''"))
+      vim.cmd.tcd({ args = { escaped }, mods = { silent = true } })
     end,
   }
 

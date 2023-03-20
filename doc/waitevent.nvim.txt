@@ -26,7 +26,8 @@ STRUCTURE                                           *waitevent.nvim-STRUCTURE*
 WaiteventOpenContext                                    *WaiteventOpenContext*
 
 - {working_dir} (string) EDITOR process working directory
-- {lcd} (fun()) function to change window local directory with working_dir
+- {lcd} (fun(path:string?)) function to change window local directory with working_dir. |:lcd|
+- {tcd} (fun(path:string?)) function to change tab local directory with working_dir. |:tcd|
 
 WaiteventEditorOption                                  *WaiteventEditorOption*
 
@@ -72,12 +73,12 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
       local paths = { ... }
       for _, path in ipairs(paths) do
         vim.cmd.tabedit(path)
-        ctx.lcd()
+        ctx.tcd()
         vim.bo.bufhidden = "wipe"
       end
       if #paths == 0 then
         vim.cmd.tabedit()
-        ctx.lcd()
+        ctx.tcd()
       end
     end,
 

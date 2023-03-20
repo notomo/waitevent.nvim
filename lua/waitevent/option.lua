@@ -8,12 +8,12 @@ local default = {
     local paths = { ... }
     for _, path in ipairs(paths) do
       vim.cmd.tabedit(path)
-      ctx.lcd()
+      ctx.tcd()
       vim.bo.bufhidden = "wipe"
     end
     if #paths == 0 then
       vim.cmd.tabedit()
-      ctx.lcd()
+      ctx.tcd()
     end
   end,
 
