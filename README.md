@@ -41,6 +41,8 @@ local default = {
     if #paths == 0 then
       vim.cmd.tabedit()
       ctx.tcd()
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(ctx.stdin, "\n", { plain = true }))
+      vim.bo.modified = false
       vim.bo.bufhidden = "wipe"
     end
   end,

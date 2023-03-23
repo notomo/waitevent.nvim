@@ -1,4 +1,4 @@
-local open_editor = function(server_address, nvim_address, editor_id, file_paths)
+local open_editor = function(server_address, nvim_address, editor_id, file_paths, stdin)
   nvim_address = os.getenv("NVIM") or nvim_address
 
   local variables = {
@@ -6,6 +6,7 @@ local open_editor = function(server_address, nvim_address, editor_id, file_paths
     server_address = server_address,
     editor_id = editor_id,
     working_dir = vim.loop.cwd(),
+    stdin = stdin,
   }
   local cmd_args = {
     "--server",
@@ -86,9 +87,12 @@ local run_with_option = function(nvim_args)
   vim.loop.run()
 end
 
-local extract_file_paths = function(nvim_args)
+local extract_inputs = function(nvim_args)
   if nvim_args[1] == "--" then
-    return vim.list_slice(nvim_args, 2)
+    return vim.list_slice(nvim_args, 2), ""
+  end
+  if nvim_args[1] == "-" then
+    return vim.list_slice(nvim_args, 2), io.stdin:read("*a"):gsub("\n$", "")
   end
 
   for _, arg in ipairs(nvim_args) do
@@ -97,14 +101,14 @@ local extract_file_paths = function(nvim_args)
     end
   end
 
-  return nvim_args
+  return nvim_args, ""
 end
 
 local main = function(args)
   local variables = vim.json.decode(args[1])
 
   local nvim_args = vim.list_slice(args, 2)
-  local file_paths = extract_file_paths(nvim_args)
+  local file_paths, stdin = extract_inputs(nvim_args)
   if not file_paths then
     return run_with_option(nvim_args)
   end
@@ -114,7 +118,7 @@ local main = function(args)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, variables.nvim_address, variables.editor_id, file_paths)
+  open_editor(server_address, variables.nvim_address, variables.editor_id, file_paths, stdin)
 
   local ok = wait_message_once(server, variables.need_server)
   if not ok then

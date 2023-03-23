@@ -58,6 +58,7 @@ function M.open(decoded_variables)
       local escaped = ([[`='%s'`]]):format(dir_path:gsub("'", "''"))
       vim.cmd.tcd({ args = { escaped }, mods = { silent = true } })
     end,
+    stdin = variables.stdin,
   }
 
   local file_paths = vim.tbl_map(function(file_path)

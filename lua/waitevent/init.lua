@@ -4,6 +4,7 @@ local M = {}
 --- @field working_dir string EDITOR process working directory
 --- @field lcd fun(path:string?) function to change window local directory with working_dir. |:lcd|
 --- @field tcd fun(path:string?) function to change tab local directory with working_dir. |:tcd|
+--- @field stdin string if stdin exists, it is not empty. |--|
 
 --- @class WaiteventEditorOption
 --- @field open fun(ctx:WaiteventOpenContext,...:string) function that be called to open files

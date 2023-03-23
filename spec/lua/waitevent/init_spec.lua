@@ -275,4 +275,17 @@ describe("waitevent.editor()", function()
 
     helper.job_wait(job_id)
   end)
+
+  it("can handle - as stdin", function()
+    local editor = waitevent.editor()
+    local cmd = editor .. " -"
+
+    job_id = helper.job_start(cmd, {}, "stdin_text")
+
+    helper.wait_autocmd("BufNew")
+    assert.exists_pattern("stdin_text$")
+    vim.cmd.bwipeout()
+
+    helper.job_wait(job_id)
+  end)
 end)

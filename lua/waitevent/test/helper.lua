@@ -47,7 +47,7 @@ function helper.wait_autocmd(events, pattern)
   end
 end
 
-function helper.job_start(cmd, raw_opts)
+function helper.job_start(cmd, raw_opts, input)
   local default = {
     on_stdout = function(_, data)
       print(table.concat(data, "\n"))
@@ -59,7 +59,12 @@ function helper.job_start(cmd, raw_opts)
     stdout_buffered = true,
   }
   local opts = vim.tbl_deep_extend("force", default, raw_opts or {})
-  return vim.fn.jobstart(cmd, opts)
+  local id = vim.fn.jobstart(cmd, opts)
+  if input then
+    vim.fn.chansend(id, input)
+    vim.fn.chanclose(id, "stdin")
+  end
+  return id
 end
 
 local asserts = require("vusted.assert").asserts
