@@ -1,3 +1,5 @@
+local uv = vim.loop or vim.uv
+
 local open_editor = function(server_address, nvim_address, editor_id, file_paths, stdin)
   nvim_address = os.getenv("NVIM") or nvim_address
 
@@ -5,7 +7,7 @@ local open_editor = function(server_address, nvim_address, editor_id, file_paths
     file_paths = file_paths,
     server_address = server_address,
     editor_id = editor_id,
-    working_dir = vim.loop.cwd(),
+    working_dir = uv.cwd(),
     stdin = stdin,
   }
   local cmd_args = {
@@ -19,14 +21,14 @@ local open_editor = function(server_address, nvim_address, editor_id, file_paths
     ([=[luaeval("require([[waitevent.command]]).open(_A[1])", [%q])]=]):format(vim.json.encode(variables)),
   }
 
-  local stderr = vim.loop.new_pipe()
+  local stderr = uv.new_pipe()
 
   local opts = {
     args = cmd_args,
     stdio = { nil, nil, stderr },
   }
   local stderrs = {}
-  local _, pid_or_err = vim.loop.spawn(vim.loop.exepath(), opts, function(code)
+  local _, pid_or_err = uv.spawn(uv.exepath(), opts, function(code)
     if code == 0 or #stderrs == 0 then
       stderr:close()
       return
@@ -37,7 +39,7 @@ local open_editor = function(server_address, nvim_address, editor_id, file_paths
     error(pid_or_err)
   end
 
-  vim.loop.read_start(stderr, function(err, data)
+  uv.read_start(stderr, function(err, data)
     assert(not err, err)
     if data then
       table.insert(stderrs, data)
@@ -48,7 +50,7 @@ end
 local wait_message_once = function(server, need_server)
   if not need_server then
     server:close()
-    vim.loop.run()
+    uv.run()
     return true
   end
 
@@ -57,7 +59,7 @@ local wait_message_once = function(server, need_server)
   server:listen(1, function(err)
     assert(not err, err)
 
-    local socket = vim.loop.new_tcp()
+    local socket = uv.new_tcp()
     server:accept(socket)
 
     socket:read_start(function(read_err, message)
@@ -68,7 +70,7 @@ local wait_message_once = function(server, need_server)
     end)
   end)
 
-  vim.loop.run()
+  uv.run()
 
   return ok
 end
@@ -78,13 +80,13 @@ local run_with_option = function(nvim_args)
     args = nvim_args,
     stdio = { 0, 1, 2 },
   }
-  local _, pid_or_err = vim.loop.spawn(vim.loop.exepath(), opts, function(code)
+  local _, pid_or_err = uv.spawn(uv.exepath(), opts, function(code)
     os.exit(code)
   end)
   if type(pid_or_err) ~= "number" then
     error(pid_or_err)
   end
-  vim.loop.run()
+  uv.run()
 end
 
 local extract_inputs = function(nvim_args)
@@ -113,7 +115,7 @@ local main = function(args)
     return run_with_option(nvim_args)
   end
 
-  local server = vim.loop.new_tcp()
+  local server = uv.new_tcp()
   server:bind("127.0.0.1", 0)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
