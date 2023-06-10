@@ -35,7 +35,7 @@ end
 local to_absolute_path = function(working_dir, file_path)
   file_path = vim.fs.normalize(file_path)
   if is_relative_path(file_path) then
-    return vim.fn.simplify(working_dir .. "/" .. file_path)
+    return vim.fn.simplify(vim.fs.joinpath(working_dir, file_path))
   end
   return file_path
 end
