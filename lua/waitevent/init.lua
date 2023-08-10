@@ -7,11 +7,11 @@ local M = {}
 --- @field stdin string if stdin exists, it is not empty. |--|
 
 --- @class WaiteventEditorOption
---- @field open fun(ctx:WaiteventOpenContext,...:string) function that be called to open files
---- @field done_events string[] autocmd events that treated as done
---- @field on_done fun(ctx:WaiteventContext) function that called on done editor. |WaiteventContext|
---- @field cancel_events string[] autocmd events that treated as cancel
---- @field on_canceled fun(ctx:WaiteventContext) function that called on canceled editor. |WaiteventContext|
+--- @field open fun(ctx:WaiteventOpenContext,...:string)? function that be called to open files
+--- @field done_events string[]? autocmd events that treated as done
+--- @field on_done fun(ctx:WaiteventContext)? function that called on done editor. |WaiteventContext|
+--- @field cancel_events string[]? autocmd events that treated as cancel
+--- @field on_canceled fun(ctx:WaiteventContext)? function that called on canceled editor. |WaiteventContext|
 
 --- @class WaiteventContext
 --- @field window_id_before_open integer: |window-ID| before |WaiteventEditorOption|.open

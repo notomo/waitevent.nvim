@@ -32,11 +32,11 @@ WaiteventOpenContext                                    *WaiteventOpenContext*
 
 WaiteventEditorOption                                  *WaiteventEditorOption*
 
-- {open} (fun(ctx:WaiteventOpenContext,...:string)) function that be called to open files
-- {done_events} (string[]) autocmd events that treated as done
-- {on_done} (fun(ctx:WaiteventContext)) function that called on done editor. |WaiteventContext|
-- {cancel_events} (string[]) autocmd events that treated as cancel
-- {on_canceled} (fun(ctx:WaiteventContext)) function that called on canceled editor. |WaiteventContext|
+- {open} (fun(ctx:WaiteventOpenContext,...:string)?) function that be called to open files
+- {done_events} (string[]?) autocmd events that treated as done
+- {on_done} (fun(ctx:WaiteventContext)?) function that called on done editor. |WaiteventContext|
+- {cancel_events} (string[]?) autocmd events that treated as cancel
+- {on_canceled} (fun(ctx:WaiteventContext)?) function that called on canceled editor. |WaiteventContext|
 
 WaiteventContext                                            *WaiteventContext*
 
