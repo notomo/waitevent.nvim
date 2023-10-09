@@ -2,6 +2,8 @@ local helper = require("vusted.helper")
 local plugin_name = helper.get_module_root(...)
 
 helper.root = helper.find_plugin_root(plugin_name)
+vim.opt.packpath:prepend(vim.fs.joinpath(helper.root, "spec/.shared/packages"))
+require("assertlib").register(require("vusted.assert").register)
 
 function helper.before_each()
   helper.test_data = require("waitevent.vendor.misclib.test.data_dir").setup(helper.root)
@@ -66,9 +68,5 @@ function helper.job_start(cmd, raw_opts, input)
   end
   return id
 end
-
-local asserts = require("vusted.assert").asserts
-local asserters = require(plugin_name .. ".vendor.assertlib").list()
-require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 return helper
