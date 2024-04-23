@@ -61,9 +61,12 @@ function M.open(decoded_variables)
     stdin = variables.stdin,
   }
 
-  local file_paths = vim.tbl_map(function(file_path)
-    return to_absolute_path(working_dir, file_path)
-  end, variables.file_paths)
+  local file_paths = vim
+    .iter(variables.file_paths)
+    :map(function(file_path)
+      return to_absolute_path(working_dir, file_path)
+    end)
+    :totable()
 
   local window_id_before_open = vim.api.nvim_get_current_win()
   opts.open(open_ctx, unpack(file_paths))
