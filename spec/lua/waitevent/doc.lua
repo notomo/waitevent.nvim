@@ -61,8 +61,6 @@ This plugin provides the way to avoid nested nvim.
 %s
 ```]]):format(full_plugin_name, example)
 
-  local readme = io.open("README.md", "w")
-  readme:write(content)
-  readme:close()
+  util.write("README.md", content)
 end
 gen_readme()
