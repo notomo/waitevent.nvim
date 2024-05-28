@@ -43,6 +43,7 @@ WaiteventContext                                            *WaiteventContext*
 - {window_id_before_open} (integer) |window-ID| before |WaiteventEditorOption|.open
 - {window_id_after_open} (integer) |window-ID| after |WaiteventEditorOption|.open
 - {autocmd} (table) |nvim_create_autocmd()| callback argument
+- {row} (integer|nil) 1-index row number. (given math.huge if not specified row) |-+|
 
 ==============================================================================
 EXAMPLES                                             *waitevent.nvim-EXAMPLES*
@@ -83,6 +84,10 @@ EXAMPLES                                             *waitevent.nvim-EXAMPLES*
         vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(ctx.stdin, "\n", { plain = true }))
         vim.bo.modified = false
         vim.bo.bufhidden = "wipe"
+      end
+      if ctx.row then
+        local row = math.min(ctx.row, vim.api.nvim_buf_line_count(0))
+        vim.api.nvim_win_set_cursor(0, { row, 0 })
       end
     end,
 

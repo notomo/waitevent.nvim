@@ -59,6 +59,7 @@ function M.open(decoded_variables)
       vim.cmd.tcd({ args = { escaped }, mods = { silent = true } })
     end,
     stdin = variables.stdin,
+    row = variables.row == -1 and math.huge or variables.row,
   }
 
   local file_paths = vim

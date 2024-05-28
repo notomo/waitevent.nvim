@@ -45,6 +45,10 @@ local default = {
       vim.bo.modified = false
       vim.bo.bufhidden = "wipe"
     end
+    if ctx.row then
+      local row = math.min(ctx.row, vim.api.nvim_buf_line_count(0))
+      vim.api.nvim_win_set_cursor(0, { row, 0 })
+    end
   end,
 
   done_events = {

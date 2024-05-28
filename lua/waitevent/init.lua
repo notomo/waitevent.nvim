@@ -17,6 +17,7 @@ local M = {}
 --- @field window_id_before_open integer: |window-ID| before |WaiteventEditorOption|.open
 --- @field window_id_after_open integer: |window-ID| after |WaiteventEditorOption|.open
 --- @field autocmd table: |nvim_create_autocmd()| callback argument
+--- @field row integer|nil: 1-index row number. (given math.huge if not specified row) |-+|
 
 --- Returns executable string to use EDITOR environment variable.
 --- This executable string uses current opened neovim as editor.

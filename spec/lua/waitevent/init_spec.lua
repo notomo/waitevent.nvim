@@ -288,4 +288,48 @@ describe("waitevent.editor()", function()
 
     helper.job_wait(job_id)
   end)
+
+  it("can handle +{row}", function()
+    local file_path = helper.test_data:create_file(
+      "file",
+      [[
+hoge
+foo
+bar]]
+    )
+
+    local editor = waitevent.editor()
+    local cmd = editor .. " +2 " .. file_path
+
+    job_id = helper.job_start(cmd)
+
+    helper.wait_autocmd("BufRead", file_path)
+
+    assert.current_line("foo")
+
+    vim.cmd.bwipeout()
+    helper.job_wait(job_id)
+  end)
+
+  it("can handle +", function()
+    local file_path = helper.test_data:create_file(
+      "file",
+      [[
+hoge
+foo
+bar]]
+    )
+
+    local editor = waitevent.editor()
+    local cmd = editor .. " + " .. file_path
+
+    job_id = helper.job_start(cmd)
+
+    helper.wait_autocmd("BufRead", file_path)
+
+    assert.current_line("bar")
+
+    vim.cmd.bwipeout()
+    helper.job_wait(job_id)
+  end)
 end)

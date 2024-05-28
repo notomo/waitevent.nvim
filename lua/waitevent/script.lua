@@ -1,10 +1,11 @@
 local uv = vim.loop or vim.uv
 
-local open_editor = function(server_address, nvim_address, editor_id, file_paths, stdin)
+local open_editor = function(server_address, nvim_address, editor_id, file_paths, stdin, row)
   nvim_address = os.getenv("NVIM") or nvim_address
 
   local variables = {
     file_paths = file_paths,
+    row = row,
     server_address = server_address,
     editor_id = editor_id,
     working_dir = uv.cwd(),
@@ -89,28 +90,45 @@ local run_with_option = function(nvim_args)
   uv.run()
 end
 
+local BOTTOM_ROW = -1
+
 local extract_inputs = function(nvim_args)
   if nvim_args[1] == "--" then
     return vim.list_slice(nvim_args, 2), ""
   end
   if nvim_args[1] == "-" then
-    return vim.list_slice(nvim_args, 2), io.stdin:read("*a"):gsub("\n$", "")
+    local stdin = io.stdin:read("*a"):gsub("\n$", "")
+    return vim.list_slice(nvim_args, 2), stdin
   end
 
+  local options = {}
   for _, arg in ipairs(nvim_args) do
     if vim.startswith(arg, "-") or vim.startswith(arg, "+") then
-      return nil
+      table.insert(options, arg)
     end
   end
+  if #options == 0 then
+    return nvim_args, ""
+  end
 
-  return nvim_args, ""
+  local option = options[1]
+  if option == "+" then
+    return vim.list_slice(nvim_args, 2), "", BOTTOM_ROW
+  end
+
+  local row = option:match("%+(%d+)")
+  if row then
+    return vim.list_slice(nvim_args, 2), "", tonumber(row)
+  end
+
+  return nil
 end
 
 local main = function(args)
   local variables = vim.json.decode(args[1])
 
   local nvim_args = vim.list_slice(args, 2)
-  local file_paths, stdin = extract_inputs(nvim_args)
+  local file_paths, stdin, row = extract_inputs(nvim_args)
   if not file_paths then
     return run_with_option(nvim_args)
   end
@@ -120,7 +138,7 @@ local main = function(args)
   local socket_name = server:getsockname()
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, variables.nvim_address, variables.editor_id, file_paths, stdin)
+  open_editor(server_address, variables.nvim_address, variables.editor_id, file_paths, stdin, row)
 
   local ok = wait_message_once(server, variables.need_server)
   if not ok then
