@@ -1,5 +1,6 @@
 local helper = require("waitevent.test.helper")
 local waitevent = helper.require("waitevent")
+local assert = require("assertlib").typed(assert)
 
 describe("waitevent.editor()", function()
   before_each(helper.before_each)
@@ -198,7 +199,7 @@ describe("waitevent.editor()", function()
 
   it("raises an error if nvim server communication fails", function()
     if vim.fn.has("win32") == 1 then
-      pending("skip on windows")
+      pending("skip on windows", function() end)
     end
 
     local file_path = helper.test_data:create_file("file")
@@ -222,7 +223,7 @@ describe("waitevent.editor()", function()
 
     helper.job_wait(job_id)
     assert.no.equal(0, exit_code)
-    assert.matches("failed to comunicate with", err)
+    assert.match("failed to comunicate with", err)
   end)
 
   it("executes as normal nvim if specified option", function()
@@ -244,7 +245,7 @@ describe("waitevent.editor()", function()
     helper.job_wait(job_id)
     assert.equal(0, exit_code)
 
-    assert.matches("--help", stdout)
+    assert.match("--help", stdout)
   end)
 
   it("applies normal nvim exit code", function()
