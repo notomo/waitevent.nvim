@@ -1,6 +1,6 @@
 local uv = vim.loop or vim.uv
 
-local open_editor = function(server_address, nvim_address, editor_id, file_paths, stdin, row)
+local open_editor = function(exe_path, server_address, nvim_address, editor_id, file_paths, stdin, row)
   nvim_address = os.getenv("NVIM") or nvim_address
 
   local variables = {
@@ -23,13 +23,14 @@ local open_editor = function(server_address, nvim_address, editor_id, file_paths
   }
 
   local stderr = uv.new_pipe()
+  assert(stderr, "failed to create new stderr pipe")
 
   local opts = {
     args = cmd_args,
     stdio = { nil, nil, stderr },
   }
   local stderrs = {}
-  local _, pid_or_err = uv.spawn(uv.exepath(), opts, function(code)
+  local _, pid_or_err = uv.spawn(exe_path, opts, function(code)
     if code == 0 or #stderrs == 0 then
       stderr:close()
       return
@@ -61,6 +62,7 @@ local wait_message_once = function(server, need_server)
     assert(not err, err)
 
     local socket = uv.new_tcp()
+    assert(socket, "failed to create new socket")
     server:accept(socket)
 
     socket:read_start(function(read_err, message)
@@ -76,12 +78,12 @@ local wait_message_once = function(server, need_server)
   return ok
 end
 
-local run_with_option = function(nvim_args)
+local run_with_option = function(exe_path, nvim_args)
   local opts = {
     args = nvim_args,
     stdio = { 0, 1, 2 },
   }
-  local _, pid_or_err = uv.spawn(uv.exepath(), opts, function(code)
+  local _, pid_or_err = uv.spawn(exe_path, opts, function(code)
     os.exit(code)
   end)
   if type(pid_or_err) ~= "number" then
@@ -127,18 +129,24 @@ end
 local main = function(args)
   local variables = vim.json.decode(args[1])
 
+  local exe_path = uv.exepath()
+  assert(exe_path, "failed to get nvim exepath")
+
   local nvim_args = vim.list_slice(args, 2)
   local file_paths, stdin, row = extract_inputs(nvim_args)
   if not file_paths then
-    return run_with_option(nvim_args)
+    return run_with_option(exe_path, nvim_args)
   end
 
   local server = uv.new_tcp()
+  assert(server, "failed to create new server")
   server:bind("127.0.0.1", 0)
+
   local socket_name = server:getsockname()
+  assert(socket_name, "failed to getsockname")
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(server_address, variables.nvim_address, variables.editor_id, file_paths, stdin, row)
+  open_editor(exe_path, server_address, variables.nvim_address, variables.editor_id, file_paths, stdin, row)
 
   local ok = wait_message_once(server, variables.need_server)
   if not ok then
