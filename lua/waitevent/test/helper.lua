@@ -26,11 +26,6 @@ function helper.job_wait(job_id)
 end
 
 function helper.wait_autocmd(events, pattern)
-  vim.validate({
-    events = { events, "string", "table" },
-    pattern = { pattern, "string", true },
-  })
-
   local called = false
   local group = vim.api.nvim_create_augroup("waitevent_test", {})
   vim.api.nvim_create_autocmd(events, {

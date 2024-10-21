@@ -51,7 +51,6 @@ local default = {
 }
 
 local new = function(raw_opts)
-  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
   local opts = vim.tbl_deep_extend("force", default, raw_opts)
   return setmetatable(opts, M)
