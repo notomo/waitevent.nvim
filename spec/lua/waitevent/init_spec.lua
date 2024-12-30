@@ -35,7 +35,7 @@ describe("waitevent.editor()", function()
     local file_path = helper.test_data:create_file("file")
     local editor = waitevent.editor()
     local cmd = editor .. " " .. file_path
-    local dir_path = vim.fn.fnamemodify(file_path, ":h")
+    local dir_path = vim.fs.dirname(file_path)
 
     local exit_code
     job_id = helper.job_start(cmd, {
@@ -131,7 +131,7 @@ describe("waitevent.editor()", function()
     local file_path = helper.test_data:create_file("file")
     local editor = waitevent.editor()
     local cmd = editor .. " " .. "file"
-    local dir_path = vim.fn.fnamemodify(file_path, ":h")
+    local dir_path = vim.fs.dirname(file_path)
 
     job_id = helper.job_start(cmd, {
       cwd = dir_path,
