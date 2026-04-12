@@ -94,7 +94,7 @@ function M.open(decoded_variables)
   if #opts.done_events > 0 then
     vim.api.nvim_create_autocmd(opts.done_events, {
       group = group,
-      pattern = file_paths,
+      pattern = #file_paths > 0 and file_paths or nil,
       once = true,
       callback = function(autocmd)
         if finished then
@@ -113,7 +113,7 @@ function M.open(decoded_variables)
   if #opts.cancel_events > 0 then
     vim.api.nvim_create_autocmd(opts.cancel_events, {
       group = group,
-      pattern = file_paths,
+      pattern = #file_paths > 0 and file_paths or nil,
       once = true,
       callback = function(autocmd)
         if finished then
