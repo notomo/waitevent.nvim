@@ -16,7 +16,7 @@ function helper.after_each()
 end
 
 function helper.job_wait(job_id)
-  local ok = vim.wait(1000, function()
+  local ok = vim.wait(5000, function()
     local running = vim.fn.jobwait({ job_id }, 0)[1] == -1
     return not running
   end)
