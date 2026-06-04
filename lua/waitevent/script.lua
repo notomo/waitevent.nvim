@@ -1,5 +1,7 @@
 local uv = vim.loop or vim.uv
 
+local FOREVER = math.huge
+
 local open_editor = function(exe_path, server_address, nvim_address, editor_id, file_paths, stdin, row)
   nvim_address = os.getenv("NVIM") or nvim_address
 
@@ -30,12 +32,13 @@ local open_editor = function(exe_path, server_address, nvim_address, editor_id, 
     stdio = { nil, nil, stderr },
   }
   local stderrs = {}
+  local editor = { closed = false, err = nil }
   local _, pid_or_err = uv.spawn(exe_path, opts, function(code)
-    if code == 0 or #stderrs == 0 then
-      stderr:close()
-      return
+    stderr:close()
+    if code ~= 0 and #stderrs > 0 then
+      editor.err = ("failed to comunicate with %s: %s"):format(nvim_address, table.concat(stderrs, "\n"))
     end
-    error(("failed to comunicate with %s: %s"):format(nvim_address, table.concat(stderrs, "\n")))
+    editor.closed = true
   end)
   if type(pid_or_err) ~= "number" then
     error(pid_or_err)
@@ -47,16 +50,22 @@ local open_editor = function(exe_path, server_address, nvim_address, editor_id, 
       table.insert(stderrs, data)
     end
   end)
+
+  return editor
 end
 
-local wait_message_once = function(server, need_server)
+local wait_message_once = function(server, need_server, editor)
   if not need_server then
     server:close()
-    uv.run()
+    vim.wait(FOREVER, function()
+      return editor.closed
+    end)
+    assert(not editor.err, editor.err)
     return true
   end
 
   local ok = false
+  local done = false
 
   server:listen(1, function(err)
     assert(not err, err)
@@ -70,10 +79,14 @@ local wait_message_once = function(server, need_server)
       ok = message == "done"
       socket:close()
       server:close()
+      done = true
     end)
   end)
 
-  uv.run()
+  vim.wait(FOREVER, function()
+    return done or editor.err ~= nil
+  end)
+  assert(not editor.err, editor.err)
 
   return ok
 end
@@ -83,13 +96,17 @@ local run_with_option = function(exe_path, nvim_args)
     args = nvim_args,
     stdio = { 0, 1, 2 },
   }
+  local exit_code
   local _, pid_or_err = uv.spawn(exe_path, opts, function(code)
-    os.exit(code)
+    exit_code = code
   end)
   if type(pid_or_err) ~= "number" then
     error(pid_or_err)
   end
-  uv.run()
+  vim.wait(FOREVER, function()
+    return exit_code ~= nil
+  end)
+  os.exit(exit_code)
 end
 
 local BOTTOM_ROW = -1
@@ -146,9 +163,10 @@ local main = function(args)
   assert(socket_name, "failed to getsockname")
   local server_address = ("%s:%s"):format(socket_name.ip, socket_name.port)
 
-  open_editor(exe_path, server_address, variables.nvim_address, variables.editor_id, file_paths, stdin, row)
+  local editor =
+    open_editor(exe_path, server_address, variables.nvim_address, variables.editor_id, file_paths, stdin, row)
 
-  local ok = wait_message_once(server, variables.need_server)
+  local ok = wait_message_once(server, variables.need_server, editor)
   if not ok then
     os.exit(1)
   end

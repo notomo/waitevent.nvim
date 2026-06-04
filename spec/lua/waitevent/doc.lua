@@ -53,7 +53,7 @@ This plugin provides the way to avoid nested nvim.
 
 ## Requirements
 
-- Neovim nightly. This plugin uses `nvim -ll {script}`.
+- Neovim nightly.
 
 ## Example
 

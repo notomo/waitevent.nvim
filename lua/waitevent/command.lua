@@ -19,7 +19,7 @@ function M.editor(raw_opts)
 
   local nvim_path = vim.fs.normalize(vim.v.progpath)
   local script = vim.fs.normalize(vim.api.nvim_get_runtime_file("lua/waitevent/script.lua", false)[1])
-  return ([[%s -ll %q %q]]):format(nvim_path, script, vim.json.encode(variables))
+  return ([[%s -u NONE -l %q %q]]):format(nvim_path, script, vim.json.encode(variables))
 end
 
 local is_relative_path = function(file_path)
