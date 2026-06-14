@@ -1,6 +1,9 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each, pending =
+  ntf.describe, ntf.it, ntf.before_each, ntf.after_each, ntf.pending
 local helper = require("waitevent.test.helper")
-local waitevent = helper.require("waitevent")
-local assert = require("assertlib").typed(assert)
+local waitevent = require("waitevent")
+local assert = require("assertlib").typed(ntf.assert)
 
 describe("waitevent.editor()", function()
   before_each(helper.before_each)
