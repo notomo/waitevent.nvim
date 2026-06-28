@@ -6,7 +6,7 @@ vim.opt.packpath:prepend(vim.fs.joinpath(helper.root, "spec/.shared/packages"))
 require("assertlib").register(require("ntf.assert").register)
 
 function helper.before_each()
-  helper.test_data = require("waitevent.vendor.misclib.test.data_dir").setup(helper.root, { base_dir = "spec/test_data/" })
+  helper.test_data = require("waitevent.vendor.misclib.test.data_dir").setup(vim.fs.joinpath(helper.root, "spec"))
 end
 
 function helper.after_each()
